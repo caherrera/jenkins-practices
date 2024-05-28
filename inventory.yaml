@@ -1,0 +1,12 @@
+config:
+  ssh:
+    user: vagrant
+    private-key: /Users/carlosherrera/src/jenkins/.vagrant/machines/default/virtualbox/private_key
+    host-key-check: false
+
+targets:
+  - name: vagrant
+    uri: 127.0.0.1
+    config:
+      ssh:
+        port: 2222
