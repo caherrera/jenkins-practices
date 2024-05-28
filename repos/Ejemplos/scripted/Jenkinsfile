@@ -1,0 +1,44 @@
+node {
+    // Definir herramientas
+    def mvnHome = tool name: 'Maven 3.6.3', type: 'maven'
+    def jdkHome = tool name: 'JDK 11', type: 'jdk'
+    env.JAVA_HOME = "${jdkHome}"
+    env.PATH = "${mvnHome}/bin:${jdkHome}/bin:${env.PATH}"
+
+    try {
+        stage('Checkout') {
+            // Clonar el repositorio
+            checkout scm
+        }
+
+        stage('Build') {
+            // Compilar el proyecto
+            sh "${mvnHome}/bin/mvn clean install"
+        }
+
+        stage('Test') {
+            // Ejecutar pruebas
+            sh "${mvnHome}/bin/mvn test"
+            
+            // Publicar resultados de las pruebas
+            junit '**/target/surefire-reports/*.xml'
+        }
+
+        stage('Package') {
+            // Empaquetar la aplicación
+            sh "${mvnHome}/bin/mvn package"
+        }
+
+        stage('Deploy') {
+            // Realizar el despliegue (agrega tus pasos de despliegue aquí)
+            echo 'Despliegue realizado'
+        }
+
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        throw e
+    } finally {
+        // Limpiar el workspace después de cada build
+        cleanWs()
+    }
+}
